@@ -13,7 +13,7 @@ local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 	
 -- Library
-local Gate = {}
+local Anchor = {}
 Anchor.__index = Anchor
 
 local Theme = {
@@ -49,11 +49,11 @@ local function MakeDraggable(Frame, DragHandle)
 end
 
 function Anchor:CreateWindow(title)
-	local ScreenGui = A_IT("ScreenGui", game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"))
-	ScreenGui.Name = "AnchorLibrary"
-	ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	local AnchorGUI = A_IT("ScreenGui", game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"))
+	AnchorGUI.Name = "AnchorLibrary"
+	AnchorGUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-	local MainFrame = A_IT("Frame", ScreenGui)
+	local MainFrame = A_IT("Frame", AnchorGUI)
 	MainFrame.Size = UDim2.new(0, 450, 0, 300)
 	MainFrame.Position = UDim2.new(0.5, -225, 0.5, -150)
 	MainFrame.BackgroundColor3 = Theme.Main
@@ -177,14 +177,14 @@ function Anchor:CreateWindow(title)
 	elseif typeof(Theme) == 'table' then
 		SelectedTheme = Theme
 	end
-		Rayfield.Main.BackgroundColor3 = SelectedTheme.Background
-	Rayfield.Main.Topbar.BackgroundColor3 = SelectedTheme.Topbar
-	Rayfield.Main.Topbar.CornerRepair.BackgroundColor3 = SelectedTheme.Topbar
-	Rayfield.Main.Shadow.Image.ImageColor3 = SelectedTheme.Shadow
+	AnchorGUI.Main.BackgroundColor3 = SelectedTheme.Background
+	AnchorGUI.Main.Topbar.BackgroundColor3 = SelectedTheme.Topbar
+	AnchorGUI.Main.Topbar.CornerRepair.BackgroundColor3 = SelectedTheme.Topbar
+	AnchorGUI.Main.Shadow.Image.ImageColor3 = SelectedTheme.Shadow
+	AnchorGUI.Main.Topbar.ChangeSize.ImageColor3 = SelectedTheme.TextColor
+	AnchorGUI.Main.Topbar.Hide.ImageColor3 = SelectedTheme.TextColor
+	AnchorGUI.Main.Topbar.Search.ImageColor3 = SelectedTheme.TextColor
 
-	Rayfield.Main.Topbar.ChangeSize.ImageColor3 = SelectedTheme.TextColor
-	Rayfield.Main.Topbar.Hide.ImageColor3 = SelectedTheme.TextColor
-	Rayfield.Main.Topbar.Search.ImageColor3 = SelectedTheme.TextColor
 	end
 end
 

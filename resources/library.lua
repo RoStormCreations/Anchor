@@ -1,22 +1,23 @@
--- Anchor Library
--- Misc Functions
-local function GS(name)
-	local service = game:GetService(name)
-	return if cloneref then cloneref(service) else service
-end
--- Abbreviations
-A_IT = instance.new
--- Game Services
-local Players = getService("Players")
-local CoreGui = getService("CoreGui")
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-	
--- Library
+-- Anchor Library v2 - Polished, Animated, and Modular
 local Anchor = {}
 Anchor.__index = Anchor
 
-local Theme = {
+--// Services
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+
+--// Instance shorthand
+local function New(inst, props)
+	local obj = Instance.new(inst)
+	for k, v in pairs(props or {}) do
+		obj[k] = v
+	end
+	return obj
+end
+
+--// Theme
+local DefaultTheme = {
 	Main = Color3.fromRGB(25, 25, 25),
 	Second = Color3.fromRGB(32, 32, 32),
 	Accent = Color3.fromRGB(85, 170, 255),
@@ -25,13 +26,14 @@ local Theme = {
 	TextDark = Color3.fromRGB(140, 140, 140)
 }
 
-local function MakeDraggable(Frame, DragHandle)
+--// Draggable Function
+local function MakeDraggable(frame, handle)
 	local dragging, dragStart, startPos = false, nil, nil
-	DragHandle.InputBegan:Connect(function(input)
+	handle.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
 			dragging = true
 			dragStart = input.Position
-			startPos = Frame.Position
+			startPos = frame.Position
 			input.Changed:Connect(function()
 				if input.UserInputState == Enum.UserInputState.End then
 					dragging = false
@@ -39,153 +41,187 @@ local function MakeDraggable(Frame, DragHandle)
 			end)
 		end
 	end)
+
 	UserInputService.InputChanged:Connect(function(input)
 		if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
 			local delta = input.Position - dragStart
-			Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X,
+			frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X,
 				startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 		end
 	end)
 end
 
+--// Create Window
 function Anchor:CreateWindow(title)
-	local AnchorGUI = A_IT("ScreenGui", game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"))
-	AnchorGUI.Name = "AnchorLibrary"
-	AnchorGUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	title = title or "Anchor"
+	local self = setmetatable({}, Anchor)
+	self.Theme = DefaultTheme
 
-	local MainFrame = A_IT("Frame", AnchorGUI)
-	MainFrame.Size = UDim2.new(0, 450, 0, 300)
-	MainFrame.Position = UDim2.new(0.5, -225, 0.5, -150)
-	MainFrame.BackgroundColor3 = Theme.Main
-	MainFrame.BorderSizePixel = 0
-	MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+	local gui = New("ScreenGui", {
+		Name = "AnchorLibrary",
+		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+		Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+	})
 
-	local UICorner = A_IT("UICorner", MainFrame)
-	UICorner.CornerRadius = UDim.new(0, 8)
+	local main = New("Frame", {
+		Size = UDim2.new(0, 480, 0, 310),
+		Position = UDim2.new(0.5, -240, 0.5, -155),
+		BackgroundColor3 = self.Theme.Main,
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Parent = gui
+	})
+	New("UICorner", { CornerRadius = UDim.new(0, 8), Parent = main })
 
-	local TitleBar = A_IT("TextLabel", MainFrame)
-	TitleBar.Size = UDim2.new(1, 0, 0, 30)
-	TitleBar.BackgroundTransparency = 1
-	TitleBar.Text = title or "Anchor"
-	TitleBar.Font = Enum.Font.GothamBold
-	TitleBar.TextColor3 = Theme.Text
-	TitleBar.TextSize = 18
-	MakeDraggable(MainFrame, TitleBar)
+	local topBar = New("TextLabel", {
+		Size = UDim2.new(1, 0, 0, 35),
+		BackgroundTransparency = 1,
+		Text = title,
+		Font = Enum.Font.GothamBold,
+		TextColor3 = self.Theme.Text,
+		TextSize = 18,
+		Parent = main
+	})
+	MakeDraggable(main, topBar)
 
-	local TabHolder = A_IT("Frame", MainFrame)
-	TabHolder.Position = UDim2.new(0, 0, 0, 30)
-	TabHolder.Size = UDim2.new(0, 120, 1, -30)
-	TabHolder.BackgroundColor3 = Theme.Second
-	TabHolder.BorderSizePixel = 0
-	Instance.new("UICorner", TabHolder).CornerRadius = UDim.new(0, 8)
-	local UIListLayout = Instance.new("UIListLayout", TabHolder)
-	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	local tabHolder = New("Frame", {
+		Size = UDim2.new(0, 130, 1, -35),
+		Position = UDim2.new(0, 0, 0, 35),
+		BackgroundColor3 = self.Theme.Second,
+		BorderSizePixel = 0,
+		Parent = main
+	})
+	New("UICorner", { CornerRadius = UDim.new(0, 8), Parent = tabHolder })
+	New("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Parent = tabHolder })
 
-	local ContentFrame = A_IT("Frame", MainFrame)
-	ContentFrame.Position = UDim2.new(0, 125, 0, 35)
-	ContentFrame.Size = UDim2.new(1, -130, 1, -40)
-	ContentFrame.BackgroundTransparency = 1
+	local contentFrame = New("Frame", {
+		Size = UDim2.new(1, -140, 1, -45),
+		Position = UDim2.new(0, 140, 0, 40),
+		BackgroundTransparency = 1,
+		Parent = main
+	})
+
 	local tabs = {}
 
-	function Anchor:AddTab(tabName)
-		local Button = A_IT("TextButton", TabHolder)
-		Button.Size = UDim2.new(1, 0, 0, 30)
-		Button.BackgroundTransparency = 1
-		Button.Text = tabName
-		Button.Font = Enum.Font.GothamSemibold
-		Button.TextColor3 = Theme.TextDark
-		Button.TextSize = 14
-		local TabFrame = A_IT("Frame", ContentFrame)
-		TabFrame.Name = tabName
-		TabFrame.Size = UDim2.new(1, 0, 1, 0)
-		TabFrame.BackgroundTransparency = 1
-		TabFrame.Visible = false
-		local Layout = A_IT("UIListLayout", TabFrame)
-		Layout.Padding = UDim.new(0, 6)
-		tabs[tabName] = TabFrame
-		Button.MouseButton1Click:Connect(function()
-			for name, tab in pairs(tabs) do
-				tab.Visible = (name == tabName)
+	function self:AddTab(tabName)
+		local tabBtn = New("TextButton", {
+			Size = UDim2.new(1, 0, 0, 30),
+			BackgroundTransparency = 1,
+			Text = tabName,
+			Font = Enum.Font.GothamSemibold,
+			TextColor3 = self.Theme.TextDark,
+			TextSize = 14,
+			Parent = tabHolder
+		})
+
+		local tabFrame = New("Frame", {
+			Name = tabName,
+			Size = UDim2.new(1, 0, 1, 0),
+			Visible = false,
+			BackgroundTransparency = 1,
+			Parent = contentFrame
+		})
+		New("UIListLayout", { Padding = UDim.new(0, 6), Parent = tabFrame })
+		tabs[tabName] = tabFrame
+
+		tabBtn.MouseButton1Click:Connect(function()
+			for name, frame in pairs(tabs) do
+				frame.Visible = (name == tabName)
 			end
-			for _, btn in pairs(TabHolder:GetChildren()) do
+			for _, btn in pairs(tabHolder:GetChildren()) do
 				if btn:IsA("TextButton") then
-					btn.TextColor3 = Theme.TextDark
+					TweenService:Create(btn, TweenInfo.new(0.2), { TextColor3 = self.Theme.TextDark }):Play()
 				end
 			end
-			Button.TextColor3 = Theme.Text
+			TweenService:Create(tabBtn, TweenInfo.new(0.2), { TextColor3 = self.Theme.Text }):Play()
 		end)
 
 		local elements = {}
 
 		elements.AddLabel = function(_, text)
-			local Label = A_IT("TextLabel", TabFrame)
-			Label.Size = UDim2.new(1, 0, 0, 25)
-			Label.BackgroundTransparency = 1
-			Label.Font = Enum.Font.GothamSemibold
-			Label.TextColor3 = Theme.Text
-			Label.TextSize = 14
-			Label.Text = text
+			New("TextLabel", {
+				Size = UDim2.new(1, 0, 0, 25),
+				BackgroundTransparency = 1,
+				Font = Enum.Font.GothamSemibold,
+				TextColor3 = self.Theme.Text,
+				TextSize = 14,
+				Text = text,
+				Parent = tabFrame
+			})
 		end
 
 		elements.AddButton = function(_, text, callback)
-			local Btn = A_IT("TextButton", TabFrame)
-			Btn.Size = UDim2.new(1, 0, 0, 30)
-			Btn.BackgroundColor3 = Theme.Second
-			Btn.Text = text
-			Btn.Font = Enum.Font.Gotham
-			Btn.TextColor3 = Theme.Text
-			Btn.TextSize = 14
-			Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
-			Btn.MouseButton1Click:Connect(function() pcall(callback) end)
+			local btn = New("TextButton", {
+				Size = UDim2.new(1, 0, 0, 30),
+				BackgroundColor3 = self.Theme.Second,
+				Text = text,
+				Font = Enum.Font.Gotham,
+				TextColor3 = self.Theme.Text,
+				TextSize = 14,
+				Parent = tabFrame
+			})
+			New("UICorner", { CornerRadius = UDim.new(0, 6), Parent = btn })
+			btn.MouseButton1Click:Connect(function()
+				TweenService:Create(btn, TweenInfo.new(0.1), { BackgroundColor3 = self.Theme.Accent }):Play()
+				pcall(callback)
+				wait(0.15)
+				TweenService:Create(btn, TweenInfo.new(0.2), { BackgroundColor3 = self.Theme.Second }):Play()
+			end)
 		end
-		elements.AddParagraph = function(_, text, callback)
-			local pgh = A_IT("TextLabel", TabFrame)
-			pgh.Size = UDim2.new(1, 0, 0, 30)
-			pgh.BackgroundColor3 = Theme.Second
-			pgh.Text = text
-			pgh.Font = Enum.Font.Gotham
-			pgh.TextColor3 = Theme.Text
-			pgh.TextSize = 12
-			Instance.new("UICorner", pgh).CornerRadius = UDim.new(0, 6)
-		end
+
 		elements.AddToggle = function(_, text, callback)
-			local Toggle = A_IT("TextButton", TabFrame)
-			Toggle.Size = UDim2.new(1, 0, 0, 30)
-			Toggle.BackgroundColor3 = Theme.Second
-			Toggle.Font = Enum.Font.Gotham
-			Toggle.TextColor3 = Theme.Text
-			Toggle.TextSize = 14
-			Instance.new("UICorner", Toggle).CornerRadius = UDim.new(0, 6)
-			local State = false
-			local function updateText() Toggle.Text = (State and "[✔] " or "[ ] ") .. text end
-			updateText()
-			Toggle.MouseButton1Click:Connect(function()
-				State = not State
-				updateText()
-				pcall(callback, State)
+			local state = false
+			local container = New("Frame", {
+				Size = UDim2.new(1, 0, 0, 30),
+				BackgroundTransparency = 1,
+				Parent = tabFrame
+			})
+
+			local toggleBtn = New("TextButton", {
+				Size = UDim2.new(0, 30, 1, 0),
+				BackgroundColor3 = self.Theme.Second,
+				Text = "✖",
+				Font = Enum.Font.GothamBold,
+				TextSize = 14,
+				TextColor3 = self.Theme.Text,
+				Parent = container
+			})
+			New("UICorner", { CornerRadius = UDim.new(0, 6), Parent = toggleBtn })
+
+			local label = New("TextLabel", {
+				Size = UDim2.new(1, -35, 1, 0),
+				Position = UDim2.new(0, 35, 0, 0),
+				BackgroundTransparency = 1,
+				Text = text,
+				Font = Enum.Font.Gotham,
+				TextSize = 14,
+				TextColor3 = self.Theme.Text,
+				TextXAlignment = Enum.TextXAlignment.Left,
+				Parent = container
+			})
+
+			toggleBtn.MouseButton1Click:Connect(function()
+				state = not state
+				toggleBtn.Text = state and "✔" or "✖"
+				pcall(callback, state)
 			end)
 		end
 
 		return elements
 	end
 
-	return Anchor
-	-- Theme Applier
-	local function ChangeTheme(Theme)
-	if typeof(Theme) == 'string' then
-		SelectedTheme = Anchor.Theme[Theme]
-	elseif typeof(Theme) == 'table' then
-		SelectedTheme = Theme
+	function self:SetTheme(newTheme)
+		self.Theme = newTheme
+		main.BackgroundColor3 = self.Theme.Main
+		tabHolder.BackgroundColor3 = self.Theme.Second
+		topBar.TextColor3 = self.Theme.Text
+		for _, btn in pairs(tabHolder:GetChildren()) do
+			if btn:IsA("TextButton") then
+				btn.TextColor3 = self.Theme.TextDark
+			end
+		end
 	end
-	AnchorGUI.Main.BackgroundColor3 = SelectedTheme.Background
-	AnchorGUI.Main.Topbar.BackgroundColor3 = SelectedTheme.Topbar
-	AnchorGUI.Main.Topbar.CornerRepair.BackgroundColor3 = SelectedTheme.Topbar
-	AnchorGUI.Main.Shadow.Image.ImageColor3 = SelectedTheme.Shadow
-	AnchorGUI.Main.Topbar.ChangeSize.ImageColor3 = SelectedTheme.TextColor
-	AnchorGUI.Main.Topbar.Hide.ImageColor3 = SelectedTheme.TextColor
-	AnchorGUI.Main.Topbar.Search.ImageColor3 = SelectedTheme.TextColor
 
-	end
+	return self
 end
 
 return Anchor

@@ -1,11 +1,20 @@
--- Gate UI Library
--- Full Source Version with Buttons, Toggles, Labels, Sliders, TextBoxes, Dropdowns, Keybinds
-
-local Gate = {}
-Anchor.__index = Anchor
-
+-- Anchor Library
+-- Misc Functions
+local function GS(name)
+	local service = game:GetService(name)
+	return if cloneref then cloneref(service) else service
+end
+-- Abbreviations
+A_IT = instance.new
+-- Game Services
+local Players = getService("Players")
+local CoreGui = getService("CoreGui")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+	
+-- Library
+local Gate = {}
+Anchor.__index = Anchor
 
 local Theme = {
 	Main = Color3.fromRGB(25, 25, 25),
@@ -40,21 +49,21 @@ local function MakeDraggable(Frame, DragHandle)
 end
 
 function Anchor:CreateWindow(title)
-	local ScreenGui = Instance.new("ScreenGui", game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"))
+	local ScreenGui = A_IT("ScreenGui", game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"))
 	ScreenGui.Name = "AnchorLibrary"
 	ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-	local MainFrame = Instance.new("Frame", ScreenGui)
+	local MainFrame = A_IT("Frame", ScreenGui)
 	MainFrame.Size = UDim2.new(0, 450, 0, 300)
 	MainFrame.Position = UDim2.new(0.5, -225, 0.5, -150)
 	MainFrame.BackgroundColor3 = Theme.Main
 	MainFrame.BorderSizePixel = 0
 	MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 
-	local UICorner = Instance.new("UICorner", MainFrame)
+	local UICorner = A_IT("UICorner", MainFrame)
 	UICorner.CornerRadius = UDim.new(0, 8)
 
-	local TitleBar = Instance.new("TextLabel", MainFrame)
+	local TitleBar = A_IT("TextLabel", MainFrame)
 	TitleBar.Size = UDim2.new(1, 0, 0, 30)
 	TitleBar.BackgroundTransparency = 1
 	TitleBar.Text = title or "Anchor"
@@ -63,7 +72,7 @@ function Anchor:CreateWindow(title)
 	TitleBar.TextSize = 18
 	MakeDraggable(MainFrame, TitleBar)
 
-	local TabHolder = Instance.new("Frame", MainFrame)
+	local TabHolder = A_IT("Frame", MainFrame)
 	TabHolder.Position = UDim2.new(0, 0, 0, 30)
 	TabHolder.Size = UDim2.new(0, 120, 1, -30)
 	TabHolder.BackgroundColor3 = Theme.Second
@@ -72,26 +81,26 @@ function Anchor:CreateWindow(title)
 	local UIListLayout = Instance.new("UIListLayout", TabHolder)
 	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
-	local ContentFrame = Instance.new("Frame", MainFrame)
+	local ContentFrame = A_IT("Frame", MainFrame)
 	ContentFrame.Position = UDim2.new(0, 125, 0, 35)
 	ContentFrame.Size = UDim2.new(1, -130, 1, -40)
 	ContentFrame.BackgroundTransparency = 1
 	local tabs = {}
 
 	function Anchor:AddTab(tabName)
-		local Button = Instance.new("TextButton", TabHolder)
+		local Button = A_IT("TextButton", TabHolder)
 		Button.Size = UDim2.new(1, 0, 0, 30)
 		Button.BackgroundTransparency = 1
 		Button.Text = tabName
 		Button.Font = Enum.Font.GothamSemibold
 		Button.TextColor3 = Theme.TextDark
 		Button.TextSize = 14
-		local TabFrame = Instance.new("Frame", ContentFrame)
+		local TabFrame = A_IT("Frame", ContentFrame)
 		TabFrame.Name = tabName
 		TabFrame.Size = UDim2.new(1, 0, 1, 0)
 		TabFrame.BackgroundTransparency = 1
 		TabFrame.Visible = false
-		local Layout = Instance.new("UIListLayout", TabFrame)
+		local Layout = A_IT("UIListLayout", TabFrame)
 		Layout.Padding = UDim.new(0, 6)
 		tabs[tabName] = TabFrame
 		Button.MouseButton1Click:Connect(function()
@@ -109,7 +118,7 @@ function Anchor:CreateWindow(title)
 		local elements = {}
 
 		elements.AddLabel = function(_, text)
-			local Label = Instance.new("TextLabel", TabFrame)
+			local Label = A_IT("TextLabel", TabFrame)
 			Label.Size = UDim2.new(1, 0, 0, 25)
 			Label.BackgroundTransparency = 1
 			Label.Font = Enum.Font.GothamSemibold
@@ -119,7 +128,7 @@ function Anchor:CreateWindow(title)
 		end
 
 		elements.AddButton = function(_, text, callback)
-			local Btn = Instance.new("TextButton", TabFrame)
+			local Btn = A_IT("TextButton", TabFrame)
 			Btn.Size = UDim2.new(1, 0, 0, 30)
 			Btn.BackgroundColor3 = Theme.Second
 			Btn.Text = text
@@ -129,9 +138,18 @@ function Anchor:CreateWindow(title)
 			Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
 			Btn.MouseButton1Click:Connect(function() pcall(callback) end)
 		end
-
+		elements.AddParagraph = function(_, text, callback)
+			local pgh = A_IT("TextLabel", TabFrame)
+			pgh.Size = UDim2.new(1, 0, 0, 30)
+			pgh.BackgroundColor3 = Theme.Second
+			pgh.Text = text
+			pgh.Font = Enum.Font.Gotham
+			pgh.TextColor3 = Theme.Text
+			pgh.TextSize = 12
+			Instance.new("UICorner", pgh).CornerRadius = UDim.new(0, 6)
+		end
 		elements.AddToggle = function(_, text, callback)
-			local Toggle = Instance.new("TextButton", TabFrame)
+			local Toggle = A_IT("TextButton", TabFrame)
 			Toggle.Size = UDim2.new(1, 0, 0, 30)
 			Toggle.BackgroundColor3 = Theme.Second
 			Toggle.Font = Enum.Font.Gotham
@@ -152,6 +170,22 @@ function Anchor:CreateWindow(title)
 	end
 
 	return Anchor
+	-- Theme Applier
+	local function ChangeTheme(Theme)
+	if typeof(Theme) == 'string' then
+		SelectedTheme = Anchor.Theme[Theme]
+	elseif typeof(Theme) == 'table' then
+		SelectedTheme = Theme
+	end
+		Rayfield.Main.BackgroundColor3 = SelectedTheme.Background
+	Rayfield.Main.Topbar.BackgroundColor3 = SelectedTheme.Topbar
+	Rayfield.Main.Topbar.CornerRepair.BackgroundColor3 = SelectedTheme.Topbar
+	Rayfield.Main.Shadow.Image.ImageColor3 = SelectedTheme.Shadow
+
+	Rayfield.Main.Topbar.ChangeSize.ImageColor3 = SelectedTheme.TextColor
+	Rayfield.Main.Topbar.Hide.ImageColor3 = SelectedTheme.TextColor
+	Rayfield.Main.Topbar.Search.ImageColor3 = SelectedTheme.TextColor
+	end
 end
 
 return Anchor

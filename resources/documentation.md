@@ -11,7 +11,7 @@ Anchor is a lightweight, animated UI library for Roblox built to be modular, cle
 You can load the library by pasting the source code directly or using `loadstring` with a hosted URL:
 
 ```lua
-local Anchor = loadstring(game:HttpGet("https://yourserver.com/Anchor.lua"))()
+local Anchor = loadstring(game:HttpGet("https://raw.githubusercontent.com/RoStormCreations/Anchor/refs/heads/main/resources/library.lua"))()
 ```
 
 > Replace the URL with your actual hosting location (e.g., GitHub, Pastebin, etc.)

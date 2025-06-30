@@ -101,7 +101,7 @@ end
 
 -- Execution
 if isUserAuthorized() then
-loadstring(game:HttpGet(""))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/RoStormCreations/Anchor/refs/heads/main/resources/GAG-Loader.lua"))()
 else
     print("❌ Access denied: " .. player.Name .. " is not authorized.")
      createKickGui()

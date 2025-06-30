@@ -137,5 +137,4 @@ Apply it using `ui:SetTheme(yourThemeTable)`.
 
 ## 🔒 Credits
 
-- UI Library by You
-- Inspired by simple, responsive design principles
+- UI Library by Valoric

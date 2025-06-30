@@ -2,12 +2,12 @@ local Anchor = loadstring(game:HttpGet("https://raw.githubusercontent.com/RoStor
 local Window = Anchor:CreateWindow("Anchor - GAG")
 
 Window:SetTheme({
-	Main = Color3.fromRGB(10, 10, 10),
-	Second = Color3.fromRGB(30, 30, 30),
-	Accent = Color3.fromRGB(255, 100, 100),
-	Stroke = Color3.fromRGB(80, 80, 80),
-	Text = Color3.fromRGB(255, 255, 255),
-	TextDark = Color3.fromRGB(150, 150, 150)
+    Main = Color3.fromRGB(34, 49, 24),      -- Dark moss green
+    Second = Color3.fromRGB(64, 85, 43),    -- Olive green
+    Accent = Color3.fromRGB(120, 180, 90),  -- Fresh leaf green
+    Stroke = Color3.fromRGB(46, 64, 29),    -- Deep forest green (border)
+    Text = Color3.fromRGB(230, 240, 210),   -- Light cream (text)
+    TextDark = Color3.fromRGB(170, 190, 150) -- Muted sage green (dark text)
 })
 
 local HomeTab = Window:AddTab("Home")
